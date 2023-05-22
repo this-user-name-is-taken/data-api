@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
 
 # Function to preprocess the input image
 def preprocess_image(image):
@@ -30,19 +31,29 @@ def main():
     st.title("Rooftop Segmentation App")
 
     # Upload image
-    uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "tif"])
+    uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_image is not None:
         # Display the uploaded image
         image = Image.open(uploaded_image)
+        st.subheader("Uploaded Image")
         st.image(image, caption="Uploaded Image", use_column_width=True)
 
         # Perform prediction and get the segmentation mask
         predicted_mask = predict_mask(image)
 
-        # Display the segmentation mask
-        st.subheader("Segmentation Mask")
-        st.image(predicted_mask, caption="Segmentation Mask", use_column_width=True)
+        # Display the segmentation mask side by side with the uploaded image
+        fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+        axes[0].imshow(image)
+        axes[0].set_title("Original Image")
+        axes[0].axis("off")
+        axes[1].imshow(predicted_mask, cmap="gray")
+        axes[1].set_title("Segmentation Mask")
+        axes[1].axis("off")
+
+        # Show the figure in Streamlit
+        st.subheader("Segmentation Result")
+        st.pyplot(fig)
 
         # Calculate and display the metrics (IoU, accuracy)
         # ...
